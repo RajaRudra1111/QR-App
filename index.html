@@ -33,11 +33,13 @@
   <div id="message"></div>
 
   <script>
+    // Detect if form was just submitted (redirected with return param)
     function getQueryParam(name) {
       const urlParams = new URLSearchParams(window.location.search);
       return urlParams.get(name);
     }
 
+    // If redirected back from Google Form submission
     if (window.location.href.includes("formResponse")) {
       const returnUrl = getQueryParam("return") || "/";
       window.location.href = `confirmation.html?return=${encodeURIComponent(returnUrl)}`;
@@ -50,7 +52,13 @@
       if (decodedText.includes("https://docs.google.com/forms")) {
         html5QrCode.stop();
         document.getElementById("message").innerText = "Redirecting...";
-        window.location.href = decodedText;
+
+        const url = new URL(decodedText);
+        if (!url.searchParams.get("return")) {
+          url.searchParams.append("return", window.location.href);
+        }
+
+        window.location.href = url.toString();
       } else {
         document.getElementById("message").innerText = "Invalid QR Code.";
       }
