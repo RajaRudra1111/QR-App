@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Thank You</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      padding: 2em;
+    }
+    .btn {
+      display: inline-block;
+      padding: 0.75em 1.5em;
+      background: #2563eb;
+      color: white;
+      border-radius: 8px;
+      margin-top: 1.5em;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>Thank You!</h1>
+  <p>Your response has been recorded.</p>
+  <a id="returnLink" class="btn" href="/">Return to App</a>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const returnUrl = urlParams.get('return') || "/";
+    document.getElementById('returnLink').href = returnUrl;
+  </script>
+</body>
+</html>

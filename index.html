@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>QR to Google Form Redirect</title>
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      padding: 1em;
+    }
+    #reader {
+      width: 100%;
+      max-width: 400px;
+      margin: auto;
+    }
+    .btn {
+      display: inline-block;
+      padding: 0.75em 1.5em;
+      background: #2563eb;
+      color: white;
+      border-radius: 8px;
+      margin-top: 1em;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>Scan QR Code to Fill Google Form</h1>
+  <div id="reader"></div>
+  <div id="message"></div>
+
+  <script>
+    function getQueryParam(name) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(name);
+    }
+
+    if (window.location.href.includes("formResponse")) {
+      const returnUrl = getQueryParam("return") || "/";
+      window.location.href = `confirmation.html?return=${encodeURIComponent(returnUrl)}`;
+    }
+
+    const html5QrCode = new Html5Qrcode("reader");
+    const config = { fps: 10, qrbox: 250 };
+
+    function onScanSuccess(decodedText) {
+      if (decodedText.includes("https://docs.google.com/forms")) {
+        html5QrCode.stop();
+        document.getElementById("message").innerText = "Redirecting...";
+        window.location.href = decodedText;
+      } else {
+        document.getElementById("message").innerText = "Invalid QR Code.";
+      }
+    }
+
+    html5QrCode.start({ facingMode: "environment" }, config, onScanSuccess).catch(err => {
+      document.getElementById("message").innerText = "Camera error: " + err;
+    });
+  </script>
+</body>
+</html>
