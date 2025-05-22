@@ -4,12 +4,48 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Thank You</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   <style>
     body {
       font-family: sans-serif;
       text-align: center;
       padding: 2em;
+      margin: 0;
+      background: linear-gradient(to bottom right, #fdf6e3, #f5d0fe);
+      background-image: url('https://www.transparenttextures.com/patterns/cubes.png');
+      background-blend-mode: multiply;
+      background-attachment: fixed;
+      color: #1f2937;
     }
+
+    .title {
+      font-family: 'Playfair Display', serif;
+      font-size: 2em;
+      color: #7c3aed;
+      animation: fadeSlideIn 1.5s ease-out forwards;
+      opacity: 0;
+      margin-top: 1em;
+    }
+
+    @keyframes fadeSlideIn {
+      0% {
+        opacity: 0;
+        transform: translateY(-30px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .subtitle {
+      font-size: 1.2em;
+      color: #2563eb;
+      margin-top: 0.5em;
+      margin-bottom: 2em;
+    }
+
     .btn {
       display: inline-block;
       padding: 0.75em 1.5em;
@@ -18,25 +54,43 @@
       border-radius: 8px;
       margin-top: 1.5em;
       text-decoration: none;
+      font-weight: bold;
+      transition: background 0.3s;
+    }
+
+    .btn:hover {
+      background: #1d4ed8;
     }
   </style>
 </head>
 <body>
-  <h1>Thank You!</h1>
-  <p>Your response has been recorded.</p>
+  <div class="title">Thank You!</div>
+  <div class="subtitle">Your response has been recorded.</div>
   <a id="returnLink" class="btn" href="/">Return to App</a>
 
   <script>
+    // Handle redirect link
     const urlParams = new URLSearchParams(window.location.search);
     const finalReturnUrl = urlParams.get('final_return_url');
-
+    const link = document.getElementById('returnLink');
     if (finalReturnUrl && finalReturnUrl.trim() !== "") {
-      document.getElementById('returnLink').href = finalReturnUrl;
+      link.href = finalReturnUrl;
     } else {
-      document.getElementById('returnLink').href = "index.html"; // Fallback URL
-      document.getElementById('returnLink').innerText = "Return to Home";
+      link.href = "index.html"; // Fallback URL
+      link.innerText = "Return to Home";
       console.warn("Warning: 'final_return_url' parameter was missing or empty. Redirecting to fallback URL.");
     }
+
+    // Confetti burst on load
+    window.onload = () => {
+      setTimeout(() => {
+        confetti({
+          particleCount: 200,
+          spread: 70,
+          origin: { y: 0.6 }
+        });
+      }, 500);
+    };
   </script>
 </body>
 </html>
