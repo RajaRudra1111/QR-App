@@ -13,4 +13,65 @@
       padding: 1em;
       margin: 0;
       background: linear-gradient(to bottom right, #fdf6e3, #f5d0fe);
-      background-image: url('https://www.transparenttextures.com/patterns/cubes.png'
+      background-image: url('https://www.transparenttextures.com/patterns/cubes.png');
+      background-blend-mode: multiply;
+      background-attachment: fixed;
+      color: #1f2937;
+    }
+
+    .title-block {
+      margin-top: 2em;
+      margin-bottom: 2em;
+      line-height: 1.6;
+      font-family: 'Playfair Display', serif;
+      animation: fadeSlideIn 2s ease-out forwards;
+      opacity: 0;
+    }
+
+    @keyframes fadeSlideIn {
+      0% {
+        opacity: 0;
+        transform: translateY(-30px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .title-block h1 {
+      font-size: 2em;
+      margin: 0.3em 0;
+      color: #7c3aed;
+    }
+
+    .title-block h2 {
+      font-size: 1.4em;
+      color: #2563eb;
+      margin: 0.3em 0;
+    }
+
+    #reader {
+      width: 100%;
+      max-width: 400px;
+      margin: auto;
+      display: none;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+      background: white;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 0.75em 1.5em;
+      background: #2563eb;
+      color: white;
+      border-radius: 8px;
+      margin-top: 1em;
+      text-decoration: none;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.3s;
+    }
+
+    .btn:hover {
