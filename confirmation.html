@@ -28,8 +28,15 @@
 
   <script>
     const urlParams = new URLSearchParams(window.location.search);
-    const returnUrl = urlParams.get('return') || "/";
-    document.getElementById('returnLink').href = returnUrl;
+    const finalReturnUrl = urlParams.get('final_return_url');
+
+    if (finalReturnUrl && finalReturnUrl.trim() !== "") {
+      document.getElementById('returnLink').href = finalReturnUrl;
+    } else {
+      document.getElementById('returnLink').href = "index.html"; // Fallback URL
+      document.getElementById('returnLink').innerText = "Return to Home";
+      console.warn("Warning: 'final_return_url' parameter was missing or empty. Redirecting to fallback URL.");
+    }
   </script>
 </body>
 </html>
