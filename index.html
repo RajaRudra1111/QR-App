@@ -11,38 +11,17 @@
       font-family: sans-serif;
       text-align: center;
       padding: 1em;
-      margin: 0;
-      background: linear-gradient(to bottom right, #fdf6e3, #f5d0fe);
-      background-image: url('https://www.transparenttextures.com/patterns/cubes.png');
-      background-blend-mode: multiply;
-      background-attachment: fixed;
-      color: #1f2937;
     }
 
     .title-block {
-      margin-top: 2em;
       margin-bottom: 2em;
       line-height: 1.6;
       font-family: 'Playfair Display', serif;
-      animation: fadeSlideIn 2s ease-out forwards;
-      opacity: 0;
-    }
-
-    @keyframes fadeSlideIn {
-      0% {
-        opacity: 0;
-        transform: translateY(-30px);
-      }
-      100% {
-        opacity: 1;
-        transform: translateY(0);
-      }
     }
 
     .title-block h1 {
       font-size: 2em;
       margin: 0.3em 0;
-      color: #7c3aed;
     }
 
     .title-block h2 {
@@ -56,9 +35,6 @@
       max-width: 400px;
       margin: auto;
       display: none;
-      border-radius: 12px;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
-      background: white;
     }
 
     .btn {
@@ -70,8 +46,84 @@
       margin-top: 1em;
       text-decoration: none;
       cursor: pointer;
-      font-weight: bold;
-      transition: background 0.3s;
     }
 
-    .btn:hover {
+    .cancel-btn {
+      background: #ef4444;
+      margin-left: 1em;
+    }
+
+    #message {
+      margin-top: 1em;
+      font-weight: bold;
+    }
+
+    #button-container {
+      margin-top: 1em;
+    }
+  </style>
+</head>
+<body>
+  <div class="title-block">
+    <h1>Welcome 🙏</h1>
+    <h2>Indira Telugu School Pride Fest 2025</h2>
+    <h2>Entry Pass</h2>
+  </div>
+
+  <div id="button-container">
+    <button id="scanBtn" class="btn">Scan QR</button>
+    <button id="cancelBtn" class="btn cancel-btn" style="display: none;">Cancel</button>
+  </div>
+
+  <div id="reader"></div>
+  <div id="message"></div>
+
+  <script>
+    const html5QrCode = new Html5Qrcode("reader");
+    const config = { fps: 10, qrbox: 250 };
+
+    const scanBtn = document.getElementById("scanBtn");
+    const cancelBtn = document.getElementById("cancelBtn");
+    const readerDiv = document.getElementById("reader");
+    const messageDiv = document.getElementById("message");
+
+    scanBtn.addEventListener("click", () => {
+      readerDiv.style.display = "block";
+      cancelBtn.style.display = "inline-block";
+      messageDiv.innerText = "";
+
+      html5QrCode.start({ facingMode: "environment" }, config, onScanSuccess)
+        .catch(err => {
+          messageDiv.innerText = "Camera error: " + err;
+        });
+    });
+
+    cancelBtn.addEventListener("click", () => {
+      html5QrCode.stop()
+        .then(() => {
+          readerDiv.style.display = "none";
+          cancelBtn.style.display = "none";
+          messageDiv.innerText = "";
+        })
+        .catch(err => {
+          messageDiv.innerText = "Error stopping scanner: " + err;
+        });
+    });
+
+    function onScanSuccess(decodedText) {
+      if (decodedText.includes("https://docs.google.com/forms")) {
+        html5QrCode.stop();
+        messageDiv.innerText = "Redirecting...";
+
+        const formUrl = new URL(decodedText);
+        const appBaseUrl = window.location.origin + window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1) + 'index.html';
+        formUrl.searchParams.append("app_final_return_url", encodeURIComponent(appBaseUrl));
+
+        window.location.href = formUrl.toString();
+      } else {
+        messageDiv.innerText = "Invalid QR Code.";
+      }
+    }
+  </script>
+</body>
+</html>
