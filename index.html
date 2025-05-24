@@ -79,8 +79,6 @@
   <div id="message"></div>
 
   <script>
-    const scriptApiUrl = "https://script.google.com/macros/s/AKfycbxrs4LEkUJjUS_uCorOLGGF9zeVQz0zKYxYkKmFEqVbpVBsLp_GwExuzzIFi9RxlJnV/exec"; // Replace with your deployed Apps Script web app URL
-
     const html5QrCode = new Html5Qrcode("reader");
     const config = { fps: 10, qrbox: 250 };
 
@@ -114,31 +112,14 @@
 
     function onScanSuccess(decodedText) {
       if (decodedText.includes("https://docs.google.com/forms")) {
-        const urlObj = new URL(decodedText);
-        const uid = urlObj.searchParams.get("entry.1887434640"); // Replace 'XYZ' with your actual field ID
+        html5QrCode.stop();
+        messageDiv.innerText = "Redirecting...";
 
-        if (!uid) {
-          messageDiv.innerText = "Unique ID not found in QR.";
-          return;
-        }
+        const formUrl = new URL(decodedText);
+        const appBaseUrl = window.location.origin + window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1) + 'index.html';
+        formUrl.searchParams.append("app_final_return_url", encodeURIComponent(appBaseUrl));
 
-        fetch(`${scriptApiUrl}?uid=${encodeURIComponent(uid)}`)
-          .then(res => res.json())
-          .then(data => {
-            html5QrCode.stop();
-
-            if (data.exists) {
-              messageDiv.innerHTML = `QR Already Scanned.<br><br>
-                <a href="${data.editUrl}" class="btn" target="_blank">Edit Family Members</a>`;
-            } else {
-              messageDiv.innerText = "Redirecting...";
-              window.location.href = decodedText;
-            }
-          })
-          .catch(err => {
-            messageDiv.innerText = "Validation error: " + err;
-          });
-
+        window.location.href = formUrl.toString();
       } else {
         messageDiv.innerText = "Invalid QR Code.";
       }
