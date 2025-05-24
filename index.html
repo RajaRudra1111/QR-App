@@ -78,82 +78,52 @@
   <div id="reader"></div>
   <div id="message"></div>
 
+  <script>
+    const html5QrCode = new Html5Qrcode("reader");
+    const config = { fps: 10, qrbox: 250 };
 
-<script>
-  const html5QrCode = new Html5Qrcode("reader");
-  const config = { fps: 10, qrbox: 250 };
-  const scanBtn = document.getElementById("scanBtn");
-  const cancelBtn = document.getElementById("cancelBtn");
-  const readerDiv = document.getElementById("reader");
-  const messageDiv = document.getElementById("message");
+    const scanBtn = document.getElementById("scanBtn");
+    const cancelBtn = document.getElementById("cancelBtn");
+    const readerDiv = document.getElementById("reader");
+    const messageDiv = document.getElementById("message");
 
-  const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwdFAtvn7DNZk5C9h8M1pQ9kC5CnPCBBjO1lLaZu6htpKUd3x57aIrjDbA6dY4dN_Ju/exec"; // Your real Web App URL
-  let scannedMap = {};
-
-  async function fetchScannedMap() {
-    try {
-      const res = await fetch(WEB_APP_URL);
-      scannedMap = await res.json();
-    } catch (e) {
-      console.error("Error fetching scanned QR data:", e);
-      messageDiv.innerText = "Could not load validation data.";
-    }
-  }
-
-  scanBtn.addEventListener("click", async () => {
-    await fetchScannedMap();
-    readerDiv.style.display = "block";
-    cancelBtn.style.display = "inline-block";
-    messageDiv.innerText = "";
-
-    html5QrCode.start({ facingMode: "environment" }, config, onScanSuccess)
-      .catch(err => {
-        messageDiv.innerText = "Camera error: " + err;
-      });
-  });
-
-  cancelBtn.addEventListener("click", () => {
-    html5QrCode.stop().then(() => {
-      readerDiv.style.display = "none";
-      cancelBtn.style.display = "none";
+    scanBtn.addEventListener("click", () => {
+      readerDiv.style.display = "block";
+      cancelBtn.style.display = "inline-block";
       messageDiv.innerText = "";
+
+      html5QrCode.start({ facingMode: "environment" }, config, onScanSuccess)
+        .catch(err => {
+          messageDiv.innerText = "Camera error: " + err;
+        });
     });
-  });
 
-  function onScanSuccess(decodedText) {
-    html5QrCode.stop();
-    readerDiv.style.display = "none";
-    cancelBtn.style.display = "none";
+    cancelBtn.addEventListener("click", () => {
+      html5QrCode.stop()
+        .then(() => {
+          readerDiv.style.display = "none";
+          cancelBtn.style.display = "none";
+          messageDiv.innerText = "";
+        })
+        .catch(err => {
+          messageDiv.innerText = "Error stopping scanner: " + err;
+        });
+    });
 
-    if (!decodedText.includes("https://docs.google.com/forms")) {
-      messageDiv.innerText = "Invalid QR Code.";
-      return;
+    function onScanSuccess(decodedText) {
+      if (decodedText.includes("https://docs.google.com/forms")) {
+        html5QrCode.stop();
+        messageDiv.innerText = "Redirecting...";
+
+        const formUrl = new URL(decodedText);
+        const appBaseUrl = window.location.origin + window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1) + 'index.html';
+        formUrl.searchParams.append("app_final_return_url", encodeURIComponent(appBaseUrl));
+
+        window.location.href = formUrl.toString();
+      } else {
+        messageDiv.innerText = "Invalid QR Code.";
+      }
     }
-
-    const formUrl = new URL(decodedText);
-    const qrValue = getQRValue(decodedText); // Extract from your QR data string
-
-    if (qrValue in scannedMap) {
-      const editUrl = scannedMap[qrValue];
-      messageDiv.innerHTML = `
-        ✅ QR Already Scanned!<br/>
-        <a href="${editUrl}" target="_blank" class="btn" style="margin-top: 10px;">Edit Family Members</a>
-      `;
-    } else {
-      const returnUrl = window.location.origin + window.location.pathname.replace(/\/[^/]*$/, "/thankyou.html");
-      formUrl.searchParams.append("final_return_url", encodeURIComponent(returnUrl));
-      window.location.href = formUrl.toString();
-    }
-  }
-
-  function getQRValue(decodedText) {
-    // Example: QR content like "John Doe|7th Batch|3|2" or "https://docs.google.com/forms/d/e/...&entry.123456=John%20Doe"
-    // Use the correct logic to extract the Unique ID from the URL
-    const url = new URL(decodedText);
-    return url.searchParams.get("entry.1887434640"); // replace with your form field ID
-  }
-</script>
-
-
-  </body>
+  </script>
+</body>
 </html>
