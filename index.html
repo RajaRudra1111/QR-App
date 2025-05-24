@@ -115,7 +115,7 @@
     function onScanSuccess(decodedText) {
       if (decodedText.includes("https://docs.google.com/forms")) {
         const urlObj = new URL(decodedText);
-        const uid = urlObj.searchParams.get(entry.1887434640); // Replace 'XYZ' with your actual field ID
+        const uid = urlObj.searchParams.get("entry.1887434640"); // Replace 'XYZ' with your actual field ID
 
         if (!uid) {
           messageDiv.innerText = "Unique ID not found in QR.";
