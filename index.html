@@ -78,7 +78,6 @@
   <div id="reader"></div>
   <div id="message"></div>
 
-<!-- Keep your <head> and style section unchanged -->
 
 <script>
   const html5QrCode = new Html5Qrcode("reader");
@@ -88,21 +87,21 @@
   const readerDiv = document.getElementById("reader");
   const messageDiv = document.getElementById("message");
 
-  const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxj2X5Z8qQ8Grixu5b9jp9Ao5eJqxEoPxrNf1ucUHbr4F_BBrUt-YnQAyU2_FLU5PKM/exec"; // Replace with your real web app URL
-  let scannedDataSet = new Set();
+  const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx123456.../exec"; // Your real Web App URL
+  let scannedMap = {};
 
-  async function fetchScannedIDs() {
+  async function fetchScannedMap() {
     try {
       const res = await fetch(WEB_APP_URL);
-      const data = await res.json();
-      scannedDataSet = new Set(data);
+      scannedMap = await res.json();
     } catch (e) {
-      console.error("Failed to fetch scanned IDs", e);
+      console.error("Error fetching scanned QR data:", e);
+      messageDiv.innerText = "Could not load validation data.";
     }
   }
 
   scanBtn.addEventListener("click", async () => {
-    await fetchScannedIDs();
+    await fetchScannedMap();
     readerDiv.style.display = "block";
     cancelBtn.style.display = "inline-block";
     messageDiv.innerText = "";
@@ -132,19 +131,26 @@
     }
 
     const formUrl = new URL(decodedText);
-    const qrData = formUrl.searchParams.get("entry.1887434640"); // Replace with your actual field's entry ID
-    const editUrl = formUrl.searchParams.get("edit_url"); // Optional, if stored in QR
+    const qrValue = getQRValue(decodedText); // Extract from your QR data string
 
-    if (scannedDataSet.has(qrData)) {
+    if (qrValue in scannedMap) {
+      const editUrl = scannedMap[qrValue];
       messageDiv.innerHTML = `
-        QR Already Scanned!<br/>
-        <a href="${editUrl || '#'}" class="btn" style="margin-top:10px;">Edit Family Members</a>
+        ✅ QR Already Scanned!<br/>
+        <a href="${editUrl}" target="_blank" class="btn" style="margin-top: 10px;">Edit Family Members</a>
       `;
     } else {
       const returnUrl = window.location.origin + window.location.pathname.replace(/\/[^/]*$/, "/thankyou.html");
       formUrl.searchParams.append("final_return_url", encodeURIComponent(returnUrl));
       window.location.href = formUrl.toString();
     }
+  }
+
+  function getQRValue(decodedText) {
+    // Example: QR content like "John Doe|7th Batch|3|2" or "https://docs.google.com/forms/d/e/...&entry.123456=John%20Doe"
+    // Use the correct logic to extract the Unique ID from the URL
+    const url = new URL(decodedText);
+    return url.searchParams.get("entry.123456"); // replace with your form field ID
   }
 </script>
 
