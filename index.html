@@ -108,7 +108,7 @@
       messageDiv.innerText = "Validating QR...";
 
       try {
-        const response = await fetch(`https://script.google.com/macros/s/1XY9HKlpM5cKZxJOfEivMkrnDtdRc4ufmyk01n4tt0FAU_nYMO_-IMHXJ/exec?qrData=${encodeURIComponent(qrData)}`);
+        const response = await fetch(`https://script.google.com/macros/s/AKfycbwdFAtvn7DNZk5C9h8M1pQ9kC5CnPCBBjO1lLaZu6htpKUd3x57aIrjDbA6dY4dN_Ju/exec?qrData=${encodeURIComponent(qrData)}`);
         const result = await response.json();
 
         if (result.exists) {
