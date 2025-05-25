@@ -102,30 +102,31 @@
         });
     });
 
-    async function onScanSuccess(decodedText) {
+  async function onScanSuccess(decodedText) {
   html5QrCode.stop();
   const qrData = decodedText.trim();
   messageDiv.innerText = "Validating QR...";
 
   try {
     const url = new URL(qrData);
-    const uniqueId = url.searchParams.get("entry.1887434640"); // 👈 Extract ONLY Unique ID
+    const uniqueId = url.searchParams.get("entry.1887434640"); // Replace with your actual Unique ID param
 
     if (!uniqueId) {
       messageDiv.innerText = "Invalid QR code. Missing Unique ID.";
       return;
     }
 
-    const response = await fetch(`https://script.google.com/macros/s/AKfycbzOKOCjFmNpDYSENfqXNA5Dojm9Gs9j0CeBMkoT8fJ6cilIRVoyQ2LaSje2DttFtSTd/exec?qrData=${encodeURIComponent(uniqueId)}`);
+    const response = await fetch(`https://script.google.com/macros/s/https://script.google.com/macros/s/AKfycbzOKOCjFmNpDYSENfqXNA5Dojm9Gs9j0CeBMkoT8fJ6cilIRVoyQ2LaSje2DttFtSTd/exec?qrData=${encodeURIComponent(uniqueId)}`);
     const result = await response.json();
 
-    if (result.exists) {
+    if (result.exists && result.editUrl) {
       messageDiv.innerHTML = `
         QR Already Scanned.<br>
         <a href="${result.editUrl}" target="_blank" class="btn">Edit Details</a>
       `;
+    } else if (result.exists) {
+      messageDiv.innerHTML = `QR Already Scanned.<br><span style="color: red;">Edit URL not available.</span>`;
     } else {
-      // Redirect to the full form URL if not yet scanned
       const returnUrl = window.location.href.split('?')[0];
       url.searchParams.append("app_final_return_url", encodeURIComponent(returnUrl));
       window.location.href = url.toString();
