@@ -103,29 +103,40 @@
     });
 
     async function onScanSuccess(decodedText) {
-      html5QrCode.stop();
-      const qrData = decodedText.trim();
-      messageDiv.innerText = "Validating QR...";
+  html5QrCode.stop();
+  const qrData = decodedText.trim();
+  messageDiv.innerText = "Validating QR...";
 
-      try {
-        const response = await fetch(`https://script.google.com/macros/s/AKfycbwdFAtvn7DNZk5C9h8M1pQ9kC5CnPCBBjO1lLaZu6htpKUd3x57aIrjDbA6dY4dN_Ju/exec?qrData=${encodeURIComponent(qrData)}`);
-        const result = await response.json();
+  try {
+    const url = new URL(qrData);
+    const uniqueId = url.searchParams.get("entry.1887434640"); // 👈 Extract ONLY Unique ID
 
-        if (result.exists) {
-          messageDiv.innerHTML = `
-            QR Already Scanned.<br>
-            <a href="${result.editUrl}" target="_blank" class="btn">Edit Details</a>
-          `;
-        } else {
-          const formUrl = new URL(qrData); // QR holds prefilled Form URL
-          const returnUrl = window.location.href.split('?')[0];
-          formUrl.searchParams.append("app_final_return_url", encodeURIComponent(returnUrl));
-          window.location.href = formUrl.toString();
-        }
-      } catch (error) {
-        messageDiv.innerText = "Validation error. Try again.";
-      }
+    if (!uniqueId) {
+      messageDiv.innerText = "Invalid QR code. Missing Unique ID.";
+      return;
     }
+
+    const response = await fetch(`https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec?qrData=${encodeURIComponent(uniqueId)}`);
+    const result = await response.json();
+
+    if (result.exists) {
+      messageDiv.innerHTML = `
+        QR Already Scanned.<br>
+        <a href="${result.editUrl}" target="_blank" class="btn">Edit Details</a>
+      `;
+    } else {
+      // Redirect to the full form URL if not yet scanned
+      const returnUrl = window.location.href.split('?')[0];
+      url.searchParams.append("app_final_return_url", encodeURIComponent(returnUrl));
+      window.location.href = url.toString();
+    }
+  } catch (error) {
+    console.error(error);
+    messageDiv.innerText = "Validation error. Try again.";
+  }
+}
+
+
   </script>
 </body>
 </html>
