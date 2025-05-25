@@ -104,7 +104,7 @@
 
     async function onScanSuccess(decodedText) {
       html5QrCode.stop();
-      const qrData = decodedText.trim().toLowerCase();
+      const qrData = decodedText.trim();
       messageDiv.innerText = "Validating QR...";
 
       try {
