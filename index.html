@@ -116,7 +116,7 @@
       return;
     }
 
-    const response = await fetch(`https://script.google.com/macros/s/https://script.google.com/macros/s/AKfycbzOKOCjFmNpDYSENfqXNA5Dojm9Gs9j0CeBMkoT8fJ6cilIRVoyQ2LaSje2DttFtSTd/exec?qrData=${encodeURIComponent(uniqueId)}`);
+    const response = await fetch(`https://script.google.com/macros/s/AKfycbzOKOCjFmNpDYSENfqXNA5Dojm9Gs9j0CeBMkoT8fJ6cilIRVoyQ2LaSje2DttFtSTd/exec?qrData=${encodeURIComponent(uniqueId)}`);
     const result = await response.json();
 
     if (result.exists && result.editUrl) {
