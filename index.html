@@ -116,7 +116,7 @@
       return;
     }
 
-    const response = await fetch(`https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec?qrData=${encodeURIComponent(uniqueId)}`);
+    const response = await fetch(`https://script.google.com/macros/s/AKfycbwdFAtvn7DNZk5C9h8M1pQ9kC5CnPCBBjO1lLaZu6htpKUd3x57aIrjDbA6dY4dN_Ju/exec?qrData=${encodeURIComponent(uniqueId)}`);
     const result = await response.json();
 
     if (result.exists) {
